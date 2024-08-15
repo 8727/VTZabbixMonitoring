@@ -64,6 +64,8 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sorting.cs" />
+    <Compile Include="sql.cs" />
+    <Compile Include="web.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

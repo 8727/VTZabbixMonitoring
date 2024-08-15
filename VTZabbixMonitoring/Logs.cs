@@ -44,7 +44,7 @@ namespace VTZabbixMonitoring
             {
                 sw.WriteLine(String.Format("{0:yyMMdd hh:mm:ss} {1}", DateTime.Now.ToString(), message));
                 sw.Close();
-                if (fileInfo.Length > 20480)
+                if (fileInfo.Length > 204800)
                 {
                     logFileName++;
                 }
@@ -53,7 +53,7 @@ namespace VTZabbixMonitoring
                 foreach (string delTimefile in delTimefiles)
                 {
                     FileInfo fi = new FileInfo(delTimefile);
-                    //if (fi.CreationTime < DateTime.Now.AddDays(-Service.storageDays)) { fi.Delete(); }
+                    if (fi.CreationTime < DateTime.Now.AddDays(-Service.storageDays)) { fi.Delete(); }
                 }
             }
         }

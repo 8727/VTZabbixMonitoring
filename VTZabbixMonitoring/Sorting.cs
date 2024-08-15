@@ -42,7 +42,6 @@ namespace VTZabbixMonitoring
                 XmlDocument xFile = new XmlDocument();
                 string[] files = Directory.GetFiles(sourcePath, "*.xml", SearchOption.AllDirectories);
                 int countFiles = files.Length;
-                //statusExport += countFiles;
                 foreach (var file in files)
                 {
                     string name = Path.GetFileName(file);

@@ -12,6 +12,8 @@ namespace VTZabbixMonitoring
             InitializeComponent();
         }
 
+        public static TimeSpan localZone = TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now);
+
         public static string sourceFolderPr = "D:\\Duplo";
         public static string sourceFolderSc = "D:\\Doris";
         public static string sortingFolderPr = "D:\\!Duplo";
@@ -28,6 +30,8 @@ namespace VTZabbixMonitoring
         public static string sqlSource = "(LOCAL)";
         public static string sqlUser = "sa";
         public static string sqlPassword = "1";
+
+        public static bool statusWeb = true;
 
         void LoadConfig()
         {
@@ -80,6 +84,13 @@ namespace VTZabbixMonitoring
                 Logs.WriteLine($">>>>> Violation sorting is enabled at {storageSortingIntervalMinutes} minute intervals");
             }
 
+
+
+
+
+
+
+
         }
 
         protected override void OnStart(string[] args)
@@ -89,13 +100,13 @@ namespace VTZabbixMonitoring
             Logs.WriteLine("*******************************************************************************");
             LoadConfig();
             Sorting.HashVuolation();
-            //web.WEBServer.Start();
+            web.WEBServer.Start();
         }
 
         protected override void OnStop()
         {
-            //web.statusWeb = false;
-            //web.WEBServer.Interrupt();
+            statusWeb = false;
+            web.WEBServer.Interrupt();
             Logs.WriteLine("*******************************************************************************");
             Logs.WriteLine("*************************** Service Monitoring STOP ***************************");
             Logs.WriteLine("*******************************************************************************");
