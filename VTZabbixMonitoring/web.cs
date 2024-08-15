@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Net;
 using System.Text;
 using System.Threading;
+using System.Xml.Linq;
 
 namespace VTZabbixMonitoring
 {
@@ -35,81 +36,24 @@ namespace VTZabbixMonitoring
         {
             var HttpResponse = serverWeb.EndGetContext(result);
             string key = HttpResponse.Request.QueryString["key"];
-            string value = HttpResponse.Request.QueryString["params"];
-
-            //DateTime endDateTime = DateTime.UtcNow;
-            //DateTime sqlDateTime = endDateTime.AddMinutes(-deltamin);
-            //int violations = 0;
-            //string sqlAlarm = $"SELECT COUNT_BIG(CARS_ID) FROM[AVTO].[dbo].[CARS_VIOLATIONS] WHERE CHECKTIME > '{sqlDateTime:s}'";
-
-            //if (connectSQL)
-            //{
-            //    using (SqlConnection connection = new SqlConnection(connectionString))
-            //    {
-            //        try
-            //        {
-            //            connection.Open();
-            //            SqlCommand command = new SqlCommand(sqlAlarm, connection);
-            //            SqlDataReader reader = command.ExecuteReader();
-            //            if (reader.Read())
-            //            {
-            //                violations = Convert.ToInt32(reader.GetValue(0));
-            //            }
-            //            reader.Close();
-            //        }
-            //        catch (SqlException)
-            //        {
-            //            connection.Close();
-            //        }
-            //        finally
-            //        {
-            //            if (connection.State == ConnectionState.Open)
-            //            {
-            //                connection.Close();
-            //            }
-            //        }
-            //    }
-            //}
-
             string json = "{\"getDateTime\":\"" + DateTime.Now.ToString() + "\"";
 
-            //if (connectSQL)
-            //{
-            //    json += ",\"violations\": " + violations;
-            //}
-
-            //if (statusServicesReplicator)
-            //{
-            //    json += ",\"replicator\":[";
-            //    int r = 0;
-            //    foreach (DictionaryEntry replicatorKey in Replicator)
-            //    {
-            //        ReplicatorCh repStatus = (ReplicatorCh)replicatorKey.Value;
-            //        r++;
-            //        json += "{\"host\":\"" + repStatus.host + "\",\"lastReplicator\":\"" + repStatus.LastReplicationLocalTime + "\",\"lastReplicatorSec\":" + repStatus.LagReplication + "}";
-            //        if (r < Replicator.Count)
-            //        {
-            //            json += ",";
-            //        }
-            //    }
-            //    json += "]";
-            //}
-
-            //if (statusViewCamera)
-            //{
-            //    json += ",\"viewCamera\":[";
-            //    int c = 0;
-            //    foreach (DictionaryEntry ViewCameraKey in ViewCamera)
-            //    {
-            //        c++;
-            //        json += "{\"ip\":\"" + ViewCameraKey.Key + "\",\"status\":" + ViewCameraKey.Value + "}";
-            //        if (c < ViewCamera.Count)
-            //        {
-            //            json += ",";
-            //        }
-            //    }
-            //    json += "]";
-            //}
+            switch (key.ToLower())
+            {
+                case "replicator":
+                    
+                    break;
+                case "violation":
+                    json += ",\"violationsCount\":\"" + sql.SqlUnprocessedViolationsCount().ToString() + "\"";
+                    json += ",\"violationsSecondes\":\"" + sql.SqlUnprocessedViolationsSecondes().ToString() + "\"";
+                    break;
+                case "export":
+                    
+                    break;
+                default:
+                    
+                    break;
+            }
 
             json += "}";
 

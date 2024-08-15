@@ -34,13 +34,42 @@ namespace VTZabbixMonitoring
             return response;
         }
 
-        static public object SqlUnprocessedViolations()
-        {
-            string sqlunprocessedviolations = "SELECT COUNT_BIG(CARS_ID) FROM AVTO.dbo.CARS where PROCESSED = 0";
-            return SQLQuery(sqlunprocessedviolations);
+        static UInt32 DateTimeToSecondes(string dt) 
+        { 
+            DateTime converDateTime = DateTime.ParseExact(dt, "d.M.yyyy H:mm:ss", System.Globalization.CultureInfo.InvariantCulture).Add(+Service.localZone);
+            return Convert.ToUInt32(DateTime.Now.Subtract(converDateTime).TotalSeconds);
         }
 
-        static public object SqlLastDate()
+        public static UInt32 SqlUnprocessedViolationsCount()
+        {
+            string sqlQuery = "SELECT COUNT_BIG(CARS_ID) FROM AVTO.dbo.CARS where PROCESSED = 0";
+            return Convert.ToUInt32(SQLQuery(sqlQuery));
+        }
+
+        public static UInt32 SqlUnprocessedViolationsSecondes()
+        {
+            string sqlQuery = "SELECT TOP(1) CHECKTIME FROM AVTO.dbo.CARS where PROCESSED = 0";
+            return DateTimeToSecondes(SQLQuery(sqlQuery).ToString());
+        }
+
+
+        public static UInt32 SqlUnprocessedExportCount()
+        {
+            string sqlQuery = "SELECT COUNT_BIG(CARS_ID) FROM AVTO.dbo.CARS where PROCESSED = 0";
+            return Convert.ToUInt32(SQLQuery(sqlQuery));
+        }
+
+        public static UInt32 SqlUnprocessedExportSecondes()
+        {
+            string sqlQuery = "SELECT TOP(1) CHECKTIME FROM AVTO.dbo.CARS where PROCESSED = 0";
+            return DateTimeToSecondes(SQLQuery(sqlQuery).ToString());
+        }
+
+
+
+
+
+        public static object SqlLastDate()
         {
             string sqllastdate = "SELECT TOP(1) CHECKTIME FROM AVTO.dbo.CARS ORDER BY CARS_ID DESC";
             string sqllastdatest = "SELECT TOP(1) CHECKTIME FROM AVTO.dbo.CARS";
