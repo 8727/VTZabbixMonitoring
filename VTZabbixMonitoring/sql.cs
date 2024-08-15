@@ -8,7 +8,7 @@ namespace VTZabbixMonitoring
     {
         static string connectionString = $@"Data Source={Service.sqlSource};Initial Catalog=AVTO;User Id={Service.sqlUser};Password={Service.sqlPassword};Connection Timeout=60";
 
-        static public object SQLQuery(string query)
+        static object SQLQuery(string query)
         {
             object response = -1;
             using (SqlConnection connection = new SqlConnection(connectionString))

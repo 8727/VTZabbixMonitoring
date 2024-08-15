@@ -26,6 +26,17 @@ namespace VTZabbixMonitoring
         public static bool storageСollage = false;
         public static bool storageVideo = false;
 
+        public static bool statusServicesReplicator = true;
+        public static int statusServicesReplicatorIntervalMinutes = 5;
+        public static int restartingNoReplicationIntervalHours = 1;
+
+        public static bool statusServicesViolation = true;
+        public static int statusServicesViolationIntervalMinutes = 5;
+        public static int restartingNoViolationIntervalHours = 1;
+
+        public static bool statusServicesExport = true;
+        public static int statusServicesExportIntervalMinutes = 5;
+        public static int restartingNoExportIntervalHours = 6;
 
         public static string sqlSource = "(LOCAL)";
         public static string sqlUser = "sa";
@@ -60,15 +71,17 @@ namespace VTZabbixMonitoring
                 storageСollage = Convert.ToBoolean(ConfigurationManager.AppSettings["StorageСollage"]);
                 storageVideo = Convert.ToBoolean(ConfigurationManager.AppSettings["StorageVideo"]);
 
-                //statusViewCamera = Convert.ToBoolean(ConfigurationManager.AppSettings["StatusViewCamera"]);
-                //statusViewCameraIntervalMinutes = Convert.ToInt32(ConfigurationManager.AppSettings["StatusViewCameraIntervalMinutes"]);
+                statusServicesReplicator = Convert.ToBoolean(ConfigurationManager.AppSettings["StatusServicesReplicator"]);
+                statusServicesReplicatorIntervalMinutes = Convert.ToInt32(ConfigurationManager.AppSettings["StatusServicesReplicatorIntervalMinutes"]);
+                restartingNoReplicationIntervalHours = Convert.ToInt32(ConfigurationManager.AppSettings["RestartingNoReplicationIntervalHours"]);
 
-                //statusServicesReplicator = Convert.ToBoolean(ConfigurationManager.AppSettings["StatusServicesReplicator"]);
-                //statusServicesReplicatorIntervalMinutes = Convert.ToInt32(ConfigurationManager.AppSettings["StatusServicesReplicatorIntervalMinutes"]);
-                //restartingNoReplicationIntervalMinutes = Convert.ToInt32(ConfigurationManager.AppSettings["RestartingNoReplicationIntervalMinutes"]);
+                statusServicesViolation = Convert.ToBoolean(ConfigurationManager.AppSettings["StatusServicesViolation"]);
+                statusServicesViolationIntervalMinutes = Convert.ToInt32(ConfigurationManager.AppSettings["StatusServicesViolationIntervalMinutes"]);
+                restartingNoViolationIntervalHours = Convert.ToInt32(ConfigurationManager.AppSettings["RestartingNoViolationIntervalHours"]);
 
-                //statusServicesExport = Convert.ToBoolean(ConfigurationManager.AppSettings["StatusServicesExport"]);
-                //statusServicesExportIntervalHours = Convert.ToInt32(ConfigurationManager.AppSettings["StatusServicesExportIntervalHours"]);
+                statusServicesExport = Convert.ToBoolean(ConfigurationManager.AppSettings["StatusServicesExport"]);
+                statusServicesExportIntervalMinutes = Convert.ToInt32(ConfigurationManager.AppSettings["StatusServicesExportIntervalMinutes"]);
+                restartingNoExportIntervalHours = Convert.ToInt32(ConfigurationManager.AppSettings["RestartingNoExportIntervalHours"]);
 
                 sqlSource = ConfigurationManager.AppSettings["SQLDataSource"];
                 sqlUser = ConfigurationManager.AppSettings["SQLUser"];
@@ -81,16 +94,37 @@ namespace VTZabbixMonitoring
                 storageTimer.Elapsed += Sorting.OnStorageTimer;
                 storageTimer.AutoReset = true;
                 storageTimer.Enabled = true;
-                Logs.WriteLine($">>>>> Violation sorting is enabled at {storageSortingIntervalMinutes} minute intervals");
+                Logs.WriteLine($">>>>> Violation sorting is enabled at {storageSortingIntervalMinutes} minute intervals.");
             }
 
+            if (statusServicesReplicator)
+            {
+                var statusServicesReplicatorTimer = new System.Timers.Timer(statusServicesReplicatorIntervalMinutes * 60000);
+                statusServicesReplicatorTimer.Elapsed += timers.OnReplicatorStatus;
+                statusServicesReplicatorTimer.AutoReset = true;
+                statusServicesReplicatorTimer.Enabled = true;
+                Logs.WriteLine($">>>>> Replication service monitoring is enabled at {statusServicesReplicatorIntervalMinutes} minute intervals.");
+            }
 
+            if (statusServicesViolation)
+            {
+                var statusServicesViolationTimer = new System.Timers.Timer(statusServicesViolationIntervalMinutes * 60000);
+                statusServicesViolationTimer.Elapsed += timers.OnViolationStatus;
+                statusServicesViolationTimer.AutoReset = true;
+                statusServicesViolationTimer.Enabled = true;
+                Logs.WriteLine($">>>>> Violation service monitoring is enabled at {statusServicesViolationIntervalMinutes} minute intervals.");
+            }
 
+            if (statusServicesExport)
+            {
+                var statusServicesExportTimer = new System.Timers.Timer(statusServicesExportIntervalMinutes * 60000);
+                statusServicesExportTimer.Elapsed += timers.OnExportStatus;
+                statusServicesExportTimer.AutoReset = true;
+                statusServicesExportTimer.Enabled = true;
+                Logs.WriteLine($">>>>> Export service monitoring is enabled at {statusServicesExportIntervalMinutes} minute intervals.");
+            }
 
-
-
-
-
+            Logs.WriteLine("-------------------------------------------------------------------------------");
         }
 
         protected override void OnStart(string[] args)
