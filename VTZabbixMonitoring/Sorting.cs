@@ -31,8 +31,8 @@ namespace VTZabbixMonitoring
 
         public static void OnStorageTimer(Object source, ElapsedEventArgs e)
         {
-            SortingFiles(Service1.sourceFolderPr, Service1.sortingFolderPr);
-            SortingFiles(Service1.sourceFolderSc, Service1.sortingFolderSc);
+            SortingFiles(Service.sourceFolderPr, Service.sortingFolderPr);
+            SortingFiles(Service.sourceFolderSc, Service.sortingFolderSc);
         }
 
         static void SortingFiles(string sourcePath, string outPath)
@@ -65,22 +65,22 @@ namespace VTZabbixMonitoring
                             Directory.CreateDirectory(Path);
                         }
 
-                        if (Service1.storageXML)
+                        if (Service.storageXML)
                         {
                             File.Copy(file, (Path + name), true);
                         }
 
-                        if (Service1.storageСollage && File.Exists(PathSour + "\\" + nameRemote + "_car.jpg"))
+                        if (Service.storageСollage && File.Exists(PathSour + "\\" + nameRemote + "_car.jpg"))
                         {
                             File.Copy((PathSour + "\\" + nameRemote + "_car.jpg"), (Path + nameRemote + "_car.jpg"), true);
                         }
 
-                        if (Service1.storageVideo && File.Exists(PathSour + "\\" + nameRemote + "__1video.mp4"))
+                        if (Service.storageVideo && File.Exists(PathSour + "\\" + nameRemote + "__1video.mp4"))
                         {
                             File.Copy((PathSour + "\\" + nameRemote + "__1video.mp4"), (Path + nameRemote + "__1video.mp4"), true);
                         }
 
-                        if (Service1.storageVideo && File.Exists(PathSour + "\\" + nameRemote + "__2video.mp4"))
+                        if (Service.storageVideo && File.Exists(PathSour + "\\" + nameRemote + "__2video.mp4"))
                         {
                             File.Copy((PathSour + "\\" + nameRemote + "__2video.mp4"), (Path + nameRemote + "__2video.mp4"), true);
                         }
@@ -97,7 +97,7 @@ namespace VTZabbixMonitoring
                         foreach (string delTimefile in delTimefiles)
                         {
                             FileInfo fi = new FileInfo(delTimefile);
-                            if (fi.CreationTime < DateTime.Now.AddDays(-Service1.storageDays)) { fi.Delete(); }
+                            if (fi.CreationTime < DateTime.Now.AddDays(-Service.storageDays)) { fi.Delete(); }
                         }
                         processDirectory(outPath);
                     }

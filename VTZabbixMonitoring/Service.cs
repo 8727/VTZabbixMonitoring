@@ -5,9 +5,9 @@ using System.ServiceProcess;
 
 namespace VTZabbixMonitoring
 {
-    public partial class Service1 : ServiceBase
+    public partial class Service : ServiceBase
     {
-        public Service1()
+        public Service()
         {
             InitializeComponent();
         }
