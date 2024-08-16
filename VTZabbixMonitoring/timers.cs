@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using System.ServiceProcess;
 using System.Threading;
 using System.Timers;
@@ -8,6 +9,12 @@ namespace VTZabbixMonitoring
 {
     internal class timers
     {
+        static bool replicator = false;
+        static bool violation = false;
+        static bool export = false;
+
+        static DriveInfo driveInfo = new DriveInfo(Service.DiskMonitoring);
+
         static void ReStartService(string serviceName)
         {
             ServiceController service = new ServiceController(serviceName);
@@ -46,14 +53,51 @@ namespace VTZabbixMonitoring
             Process.Start(cmd);
         }
 
-        static bool replicator = false;
-        static bool violation = false;
-        static bool export = false;
+        public static UInt32 GetUpTime()
+        {
+            PerformanceCounter uptime = new PerformanceCounter("System", "System Up Time");
+            uptime.NextValue();
+            return Convert.ToUInt32(uptime.NextValue());
+        }
+
+        public static long GetDiskTotalSize()
+        {
+            return driveInfo.TotalSize;
+        }
+
+        public static long GetDiskTotalFreeSpace()
+        {
+            return driveInfo.TotalFreeSpace; ;
+        }
+
+        public static byte GetDiskUsagePercentage()
+        {
+            return Convert.ToByte(driveInfo.TotalFreeSpace / (driveInfo.TotalSize / 100));
+        }
+
+        public static byte GetDiskPercentFreeSpace()
+        {
+            return Convert.ToByte(100 - (driveInfo.TotalFreeSpace / (driveInfo.TotalSize / 100)));
+        }
+
+        public static UInt16 GetNetworkSent()
+        {
+            PerformanceCounter counterSent = new PerformanceCounter("Network Interface", "Bytes Sent/sec", Service.networkInterfaceForMonitoring);
+            counterSent.NextValue();
+            return Convert.ToUInt16(counterSent.NextValue() * 8 / 1024);
+        }
+
+        public static UInt16 GetNetworkReceived()
+        {
+            PerformanceCounter counterReceived = new PerformanceCounter("Network Interface", "Bytes Received/sec", Service.networkInterfaceForMonitoring);
+            counterReceived.NextValue();
+            return Convert.ToUInt16(counterReceived.NextValue() * 8 / 1024);
+        }
 
         public static void OnReplicatorStatus(Object source, ElapsedEventArgs e)
         {
             UInt32 seconds = sql.LastReplicationSeconds();
-            Service.StatuseJson["LastReplicationSeconds"] = seconds.ToString();
+            Service.StatusJson["LastReplicationSeconds"] = seconds.ToString();
 
             if (!replicator && seconds > (Service.restartingNoViolationIntervalHours * 3600))
             {
@@ -72,8 +116,8 @@ namespace VTZabbixMonitoring
             UInt32 count = sql.UnprocessedViolationsCount();
             UInt32 seconds = sql.UnprocessedViolationsSeconds();
 
-            Service.StatuseJson["UnprocessedViolationsCount"] = count.ToString();
-            Service.StatuseJson["UnprocessedViolationsSeconds"] = seconds.ToString();
+            Service.StatusJson["UnprocessedViolationsCount"] = count.ToString();
+            Service.StatusJson["UnprocessedViolationsSeconds"] = seconds.ToString();
 
             if (!violation && seconds > (Service.restartingNoViolationIntervalHours * 3600))
             {
@@ -92,8 +136,8 @@ namespace VTZabbixMonitoring
             UInt32 count = sql.UnexportedCount();
             UInt32 seconds = sql.UnexportedSeconds();
 
-            Service.StatuseJson["UnexportedCount"] = count.ToString();
-            Service.StatuseJson["UnexportedSeconds"] = seconds.ToString();
+            Service.StatusJson["UnexportedCount"] = count.ToString();
+            Service.StatusJson["UnexportedSeconds"] = seconds.ToString();
 
             if (!export && seconds > (Service.restartingNoExportIntervalHours * 3600))
             {
@@ -107,5 +151,27 @@ namespace VTZabbixMonitoring
             Logs.WriteLine($"The export delay in seconds is {seconds}, in the amount of {count}.");
         }
 
+        public static void OnHostStatus(Object source, ElapsedEventArgs e)
+        {
+            UInt32 upTimeUInt32 =  GetUpTime();
+            Service.StatusJson["UpTime"] = upTimeUInt32.ToString();
+            Logs.WriteLine($"Host uptime in seconds {upTimeUInt32}.");
+
+            long diskSize = timers.GetDiskTotalSize() / 1_073_741_824;
+            long diskFreeSpace = timers.GetDiskTotalFreeSpace() / 1_073_741_824;
+            byte diskPercentSize = timers.GetDiskUsagePercentage();
+            byte diskPercentFreeSpace = timers.GetDiskPercentFreeSpace();
+
+            Service.StatusJson["DiskTotalSize"] = diskSize.ToString();
+            Service.StatusJson["DiskTotalFreeSpace"] = diskFreeSpace.ToString();
+            Service.StatusJson["DiskPercentSize"] = diskPercentSize.ToString();
+            Service.StatusJson["DiskPercentFreeSpace"] = diskPercentFreeSpace.ToString();
+            Logs.WriteLine($"Total disk size {diskSize}, free space size {diskFreeSpace}, disk size as a percentage {diskPercentSize}, free disk space percentage {diskPercentFreeSpace}.");
+
+            UInt16 networkSent = GetNetworkSent();
+            UInt16 networkReceived = GetNetworkReceived();
+
+            Logs.WriteLine($"Interface loading incoming {networkReceived}, outgoing {networkSent}.");
+        }
     }
 }

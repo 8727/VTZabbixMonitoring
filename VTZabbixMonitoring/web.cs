@@ -49,11 +49,11 @@ namespace VTZabbixMonitoring
                     
                     break;
                 default:
-                    json += ",\"replicationSeconds\":\"" + Service.StatuseJson["LastReplicationSeconds"] + "\"";
-                    json += ",\"violationsCount\":\"" + Service.StatuseJson["UnprocessedViolationsCount"] + "\"";
-                    json += ",\"violationsSeconds\":\"" + Service.StatuseJson["UnprocessedViolationsSeconds"] + "\"";
-                    json += ",\"unexportedCount\":\"" + Service.StatuseJson["UnexportedCount"] + "\"";
-                    json += ",\"unexportedSeconds\":\"" + Service.StatuseJson["UnexportedSeconds"] + "\"";
+                    json += ",\"replicationSeconds\":\"" + Service.StatusJson["LastReplicationSeconds"] + "\"";
+                    json += ",\"violationsCount\":\"" + Service.StatusJson["UnprocessedViolationsCount"] + "\"";
+                    json += ",\"violationsSeconds\":\"" + Service.StatusJson["UnprocessedViolationsSeconds"] + "\"";
+                    json += ",\"unexportedCount\":\"" + Service.StatusJson["UnexportedCount"] + "\"";
+                    json += ",\"unexportedSeconds\":\"" + Service.StatusJson["UnexportedSeconds"] + "\"";
                     break;
             }
 

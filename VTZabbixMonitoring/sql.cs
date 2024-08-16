@@ -75,7 +75,7 @@ namespace VTZabbixMonitoring
             return DateTimeToSecondes(SQLQuery(sqlQuery).ToString());
         }
 
-        public static string ArchiveDepth()
+        public static string ArchiveDepthSeconds()
         {
             string oldEntry = "SELECT TOP(1) CHECKTIME FROM AVTO.dbo.CARS";
             string lastEntry = "SELECT TOP(1) CHECKTIME FROM AVTO.dbo.CARS ORDER BY CARS_ID DESC";
@@ -86,7 +86,11 @@ namespace VTZabbixMonitoring
             return archiveLast.Subtract(archiveOld).TotalSeconds.ToString();
         }
 
-
+        public static UInt32 ArchiveDepthCount()
+        {
+            string sqlQuery = "SELECT COUNT_BIG(CARS_ID) FROM AVTO.dbo.CARS";
+            return Convert.ToUInt32(SQLQuery(sqlQuery));
+        }
 
 
     }

@@ -15,7 +15,7 @@ namespace VTZabbixMonitoring
 
         public static TimeSpan localZone = TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now);
 
-        public static Hashtable StatuseJson = new Hashtable();
+        public static Hashtable StatusJson = new Hashtable();
 
         public static string sourceFolderPr = "D:\\Duplo";
         public static string sourceFolderSc = "D:\\Doris";
@@ -40,6 +40,13 @@ namespace VTZabbixMonitoring
         public static bool statusServicesExport = true;
         public static int statusServicesExportIntervalMinutes = 5;
         public static int restartingNoExportIntervalHours = 6;
+
+        public static bool statusHost = true;
+        public static int statusHostIntervalMinutes = 5;
+
+        public static string networkInterfaceForMonitoring = "Intel[R] Wireless-AC 9260 160MHz";
+
+        public static string DiskMonitoring = "D:\\";
 
         public static string sqlSource = "(LOCAL)";
         public static string sqlUser = "sa";
@@ -86,6 +93,11 @@ namespace VTZabbixMonitoring
                 statusServicesExportIntervalMinutes = Convert.ToInt32(ConfigurationManager.AppSettings["StatusServicesExportIntervalMinutes"]);
                 restartingNoExportIntervalHours = Convert.ToInt32(ConfigurationManager.AppSettings["RestartingNoExportIntervalHours"]);
 
+                statusHost = Convert.ToBoolean(ConfigurationManager.AppSettings["StatusHost"]);
+                statusHostIntervalMinutes = Convert.ToInt32(ConfigurationManager.AppSettings["StatusHostIntervalMinutes"]);
+
+                networkInterfaceForMonitoring = ConfigurationManager.AppSettings["NetworkInterfaceForMonitoring"];
+
                 sqlSource = ConfigurationManager.AppSettings["SQLDataSource"];
                 sqlUser = ConfigurationManager.AppSettings["SQLUser"];
                 sqlPassword = ConfigurationManager.AppSettings["SQLPassword"];
@@ -127,19 +139,40 @@ namespace VTZabbixMonitoring
                 Logs.WriteLine($">>>>> Export service monitoring is enabled at {statusServicesExportIntervalMinutes} minute intervals.");
             }
 
+            if (statusHost)
+            {
+                var statusHostTimer = new System.Timers.Timer(statusHostIntervalMinutes * 60000);
+                statusHostTimer.Elapsed += timers.OnHostStatus;
+                statusHostTimer.AutoReset = true;
+                statusHostTimer.Enabled = true;
+                Logs.WriteLine($">>>>> Host monitoring is enabled at {statusHostIntervalMinutes} minute intervals.");
+            }
+
             Logs.WriteLine("-------------------------------------------------------------------------------");
 
         }
 
         void CreatedStatuseJson()
         {
-            StatuseJson.Add("LastReplicationSeconds", sql.LastReplicationSeconds().ToString());
-            StatuseJson.Add("UnprocessedViolationsCount", sql.UnprocessedViolationsCount().ToString());
-            StatuseJson.Add("UnprocessedViolationsSeconds", sql.UnprocessedViolationsSeconds().ToString());
-            StatuseJson.Add("UnexportedCount", sql.UnexportedCount().ToString());
-            StatuseJson.Add("UnexportedSeconds", sql.UnexportedSeconds().ToString());
+            StatusJson.Add("UpTime", timers.GetUpTime().ToString());
 
-            StatuseJson.Add("archiveDepth", sql.ArchiveDepth().ToString());
+            StatusJson.Add("DiskTotalSize", (timers.GetDiskTotalSize() / 1_073_741_824).ToString());
+            StatusJson.Add("DiskTotalFreeSpace", (timers.GetDiskTotalFreeSpace() / 1_073_741_824).ToString());
+            StatusJson.Add("DiskPercentTotalSize", timers.GetDiskUsagePercentage().ToString());
+            StatusJson.Add("DiskPercentTotalFreeSpace", timers.GetDiskPercentFreeSpace().ToString());
+
+            StatusJson.Add("NetworkSent", timers.GetNetworkSent().ToString());
+            StatusJson.Add("NetworkReceived", timers.GetNetworkReceived().ToString());
+
+            StatusJson.Add("ArchiveDepthSeconds", sql.ArchiveDepthSeconds().ToString());
+            StatusJson.Add("ArchiveDepthCount", sql.ArchiveDepthCount().ToString());
+
+            StatusJson.Add("LastReplicationSeconds", sql.LastReplicationSeconds().ToString());
+            StatusJson.Add("UnprocessedViolationsCount", sql.UnprocessedViolationsCount().ToString());
+            StatusJson.Add("UnprocessedViolationsSeconds", sql.UnprocessedViolationsSeconds().ToString());
+            StatusJson.Add("UnexportedCount", sql.UnexportedCount().ToString());
+            StatusJson.Add("UnexportedSeconds", sql.UnexportedSeconds().ToString());
+
         }
 
         protected override void OnStart(string[] args)
