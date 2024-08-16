@@ -53,6 +53,7 @@ namespace VTZabbixMonitoring
         public static void OnReplicatorStatus(Object source, ElapsedEventArgs e)
         {
             UInt32 seconds = sql.LastReplicationSeconds();
+            Service.StatuseJson["LastReplicationSeconds"] = seconds.ToString();
 
             if (!replicator && seconds > (Service.restartingNoViolationIntervalHours * 3600))
             {
@@ -71,6 +72,9 @@ namespace VTZabbixMonitoring
             UInt32 count = sql.UnprocessedViolationsCount(); ;
             UInt32 seconds = sql.UnprocessedViolationsSeconds();
 
+            Service.StatuseJson["UnprocessedViolationsCount"] = count.ToString();
+            Service.StatuseJson["UnprocessedViolationsSeconds"] = seconds.ToString();
+
             if (!violation && seconds > (Service.restartingNoViolationIntervalHours * 3600))
             {
                 violation = true;
@@ -87,6 +91,9 @@ namespace VTZabbixMonitoring
         {
             UInt32 count = sql.UnexportedCount(); ;
             UInt32 seconds = sql.UnexportedSeconds();
+
+            Service.StatuseJson["UnexportedCount"] = count.ToString();
+            Service.StatuseJson["UnexportedSeconds"] = seconds.ToString();
 
             if (!export && seconds > (Service.restartingNoExportIntervalHours * 3600))
             {

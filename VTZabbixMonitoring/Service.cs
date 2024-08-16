@@ -1,5 +1,6 @@
 ﻿using Microsoft.Win32;
 using System;
+using System.Collections;
 using System.Configuration;
 using System.ServiceProcess;
 
@@ -13,6 +14,8 @@ namespace VTZabbixMonitoring
         }
 
         public static TimeSpan localZone = TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now);
+
+        public static Hashtable StatuseJson = new Hashtable();
 
         public static string sourceFolderPr = "D:\\Duplo";
         public static string sourceFolderSc = "D:\\Doris";
@@ -125,6 +128,12 @@ namespace VTZabbixMonitoring
             }
 
             Logs.WriteLine("-------------------------------------------------------------------------------");
+
+            StatuseJson.Add("LastReplicationSeconds", "0");
+            StatuseJson.Add("UnprocessedViolationsCount", "0");
+            StatuseJson.Add("UnprocessedViolationsSeconds", "0");
+            StatuseJson.Add("UnexportedCount", "0");
+            StatuseJson.Add("UnexportedSeconds", "0");
         }
 
         protected override void OnStart(string[] args)

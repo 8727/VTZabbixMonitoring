@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.Net;
 using System.Text;
 using System.Threading;
-using System.Xml.Linq;
 
 namespace VTZabbixMonitoring
 {
@@ -50,11 +49,11 @@ namespace VTZabbixMonitoring
                     
                     break;
                 default:
-                    json += ",\"replicationSeconds\":\"" + sql.LastReplicationSeconds().ToString() + "\"";
-                    json += ",\"violationsCount\":\"" + sql.UnprocessedViolationsCount().ToString() + "\"";
-                    json += ",\"violationsSeconds\":\"" + sql.UnprocessedViolationsSeconds().ToString() + "\"";
-                    json += ",\"unexportedCount\":\"" + sql.UnexportedCount().ToString() + "\"";
-                    json += ",\"unexportedSeconds\":\"" + sql.UnexportedSeconds().ToString() + "\"";
+                    json += ",\"replicationSeconds\":\"" + Service.StatuseJson["LastReplicationSeconds"] + "\"";
+                    json += ",\"violationsCount\":\"" + Service.StatuseJson["UnprocessedViolationsCount"] + "\"";
+                    json += ",\"violationsSeconds\":\"" + Service.StatuseJson["UnprocessedViolationsSeconds"] + "\"";
+                    json += ",\"unexportedCount\":\"" + Service.StatuseJson["UnexportedCount"] + "\"";
+                    json += ",\"unexportedSeconds\":\"" + Service.StatuseJson["UnexportedSeconds"] + "\"";
                     break;
             }
 
