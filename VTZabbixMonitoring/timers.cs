@@ -52,29 +52,52 @@ namespace VTZabbixMonitoring
 
         public static void OnReplicatorStatus(Object source, ElapsedEventArgs e)
         {
-            
-            Logs.WriteLine($">>>>> Replication service monitoring is enabled.");
+            UInt32 seconds = sql.LastReplicationSeconds();
+
+            if (!replicator && seconds > (Service.restartingNoViolationIntervalHours * 3600))
+            {
+                replicator = true;
+                ReStartService("VTTrafficReplicator");
+            }
+            if (seconds > ((Service.restartingNoViolationIntervalHours * 3600) + 3600))
+            {
+                RebootHost();
+            }
+            Logs.WriteLine($"Replication delay in seconds {seconds}.");
         }
 
         public static void OnViolationStatus(Object source, ElapsedEventArgs e)
         {
-            if (!violation && sql.SqlUnprocessedViolationsSecondes() > (Service.restartingNoViolationIntervalHours * 3600))
+            UInt32 count = sql.UnprocessedViolationsCount(); ;
+            UInt32 seconds = sql.UnprocessedViolationsSeconds();
+
+            if (!violation && seconds > (Service.restartingNoViolationIntervalHours * 3600))
             {
                 violation = true;
-                ReStartService("VTTrafficReplicator");
+                ReStartService("VTViolations");
             }
-            if (sql.SqlUnprocessedViolationsSecondes() > ((Service.restartingNoViolationIntervalHours * 3600) + 3600))
+            if (seconds > ((Service.restartingNoViolationIntervalHours * 3600) + 3600))
             {
                 RebootHost();
             }
-
-            Logs.WriteLine($">>>>> Violation service monitoring is enabled.");
+            Logs.WriteLine($"The delay in processing results in seconds is {seconds}, in the amount of {count}.");
         }
 
         public static void OnExportStatus(Object source, ElapsedEventArgs e)
         {
+            UInt32 count = sql.UnexportedCount(); ;
+            UInt32 seconds = sql.UnexportedSeconds();
 
-            Logs.WriteLine($">>>>> Export service monitoring is enabled.");
+            if (!export && seconds > (Service.restartingNoExportIntervalHours * 3600))
+            {
+                export = true;
+                ReStartService("VTTrafficExport");
+            }
+            if (seconds > ((Service.restartingNoExportIntervalHours * 3600) + 3600))
+            {
+                RebootHost();
+            }
+            Logs.WriteLine($"The export delay in seconds is {seconds}, in the amount of {count}.");
         }
 
     }

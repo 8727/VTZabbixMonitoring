@@ -44,14 +44,17 @@ namespace VTZabbixMonitoring
                     
                     break;
                 case "violation":
-                    json += ",\"violationsCount\":\"" + sql.SqlUnprocessedViolationsCount().ToString() + "\"";
-                    json += ",\"violationsSecondes\":\"" + sql.SqlUnprocessedViolationsSecondes().ToString() + "\"";
+
                     break;
                 case "export":
                     
                     break;
                 default:
-                    
+                    json += ",\"replicationSeconds\":\"" + sql.LastReplicationSeconds().ToString() + "\"";
+                    json += ",\"violationsCount\":\"" + sql.UnprocessedViolationsCount().ToString() + "\"";
+                    json += ",\"violationsSeconds\":\"" + sql.UnprocessedViolationsSeconds().ToString() + "\"";
+                    json += ",\"unexportedCount\":\"" + sql.UnexportedCount().ToString() + "\"";
+                    json += ",\"unexportedSeconds\":\"" + sql.UnexportedSeconds().ToString() + "\"";
                     break;
             }
 

@@ -40,48 +40,45 @@ namespace VTZabbixMonitoring
             return Convert.ToUInt32(DateTime.Now.Subtract(converDateTime).TotalSeconds);
         }
 
-        public static UInt32 SqlUnprocessedViolationsCount()
+        public static UInt32 LastReplicationSeconds()
+        {
+            string sqlQuery = "SELECT TOP(1) CHECKTIME FROM AVTO.dbo.CARS ORDER BY CARS_ID DESC";
+            return DateTimeToSecondes(SQLQuery(sqlQuery).ToString());
+        }
+
+        public static UInt32 UnprocessedViolationsCount()
         {
             string sqlQuery = "SELECT COUNT_BIG(CARS_ID) FROM AVTO.dbo.CARS where PROCESSED = 0";
             return Convert.ToUInt32(SQLQuery(sqlQuery));
         }
 
-        public static UInt32 SqlUnprocessedViolationsSecondes()
+        public static UInt32 UnprocessedViolationsSeconds()
         {
             string sqlQuery = "SELECT TOP(1) CHECKTIME FROM AVTO.dbo.CARS where PROCESSED = 0";
             return DateTimeToSecondes(SQLQuery(sqlQuery).ToString());
         }
 
-
-        public static UInt32 SqlUnprocessedExportCount()
+        public static UInt32 UnexportedCount()
         {
-            string sqlQuery = "SELECT COUNT_BIG(CARS_ID) FROM AVTO.dbo.CARS where PROCESSED = 0";
+            string sqlQuery = "SELECT COUNT_BIG(CARS_ID) FROM AVTO.dbo.CARS_VIOLATIONS where EXPORT2 = 0";
             return Convert.ToUInt32(SQLQuery(sqlQuery));
         }
 
-        public static UInt32 SqlUnprocessedExportSecondes()
+        public static UInt32 UnexportedSeconds()
         {
-            string sqlQuery = "SELECT TOP(1) CHECKTIME FROM AVTO.dbo.CARS where PROCESSED = 0";
+            string sqlQuery = "SELECT TOP(1) CHECKTIME FROM AVTO.dbo.CARS_VIOLATIONS where EXPORT2 = 0";
             return DateTimeToSecondes(SQLQuery(sqlQuery).ToString());
         }
 
-
-
-
-
-        public static object SqlLastDate()
+        public static string ArchiveDepth()
         {
-            string sqllastdate = "SELECT TOP(1) CHECKTIME FROM AVTO.dbo.CARS ORDER BY CARS_ID DESC";
-            string sqllastdatest = "SELECT TOP(1) CHECKTIME FROM AVTO.dbo.CARS";
+            string oldEntry = "SELECT TOP(1) CHECKTIME FROM AVTO.dbo.CARS";
+            string lastEntry = "SELECT TOP(1) CHECKTIME FROM AVTO.dbo.CARS ORDER BY CARS_ID DESC";
 
-            DateTime replicatorendTime = DateTime.ParseExact(SQLQuery(sqllastdate).ToString(), "d.M.yyyy H:mm:ss", System.Globalization.CultureInfo.InvariantCulture).Add(+Service.localZone);
-            string interval = DateTime.Now.Subtract(replicatorendTime).TotalSeconds.ToString();
+            DateTime archiveOld = DateTime.ParseExact(SQLQuery(oldEntry).ToString(), "d.M.yyyy H:mm:ss", System.Globalization.CultureInfo.InvariantCulture).Add(+Service.localZone);
+            DateTime archiveLast = DateTime.ParseExact(SQLQuery(lastEntry).ToString(), "d.M.yyyy H:mm:ss", System.Globalization.CultureInfo.InvariantCulture).Add(+Service.localZone);
 
-            DateTime replicatorstartTime = DateTime.ParseExact(SQLQuery(sqllastdatest).ToString(), "d.M.yyyy H:mm:ss", System.Globalization.CultureInfo.InvariantCulture).Add(+Service.localZone);
-
-            string intervald = replicatorendTime.Subtract(replicatorstartTime).TotalSeconds.ToString();
-
-            return intervald;
+            return archiveLast.Subtract(archiveOld).TotalSeconds.ToString();
         }
 
 
