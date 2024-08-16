@@ -1,5 +1,5 @@
-﻿using Microsoft.Win32;
-using System;
+﻿using System;
+using Microsoft.Win32;
 using System.Collections;
 using System.Configuration;
 using System.ServiceProcess;
@@ -129,11 +129,17 @@ namespace VTZabbixMonitoring
 
             Logs.WriteLine("-------------------------------------------------------------------------------");
 
-            StatuseJson.Add("LastReplicationSeconds", "0");
-            StatuseJson.Add("UnprocessedViolationsCount", "0");
-            StatuseJson.Add("UnprocessedViolationsSeconds", "0");
-            StatuseJson.Add("UnexportedCount", "0");
-            StatuseJson.Add("UnexportedSeconds", "0");
+        }
+
+        void CreatedStatuseJson()
+        {
+            StatuseJson.Add("LastReplicationSeconds", sql.LastReplicationSeconds().ToString());
+            StatuseJson.Add("UnprocessedViolationsCount", sql.UnprocessedViolationsCount().ToString());
+            StatuseJson.Add("UnprocessedViolationsSeconds", sql.UnprocessedViolationsSeconds().ToString());
+            StatuseJson.Add("UnexportedCount", sql.UnexportedCount().ToString());
+            StatuseJson.Add("UnexportedSeconds", sql.UnexportedSeconds().ToString());
+
+            StatuseJson.Add("archiveDepth", sql.ArchiveDepth().ToString());
         }
 
         protected override void OnStart(string[] args)
@@ -142,6 +148,7 @@ namespace VTZabbixMonitoring
             Logs.WriteLine("************************** Service Monitoring START ***************************");
             Logs.WriteLine("*******************************************************************************");
             LoadConfig();
+            CreatedStatuseJson();
             Sorting.HashVuolation();
             web.WEBServer.Start();
         }

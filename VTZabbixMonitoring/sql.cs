@@ -36,6 +36,11 @@ namespace VTZabbixMonitoring
 
         static UInt32 DateTimeToSecondes(string dt) 
         { 
+            if (dt == "-1")
+            {
+                dt = "01.01.2000 00:00:00";
+            }
+
             DateTime converDateTime = DateTime.ParseExact(dt, "d.M.yyyy H:mm:ss", System.Globalization.CultureInfo.InvariantCulture).Add(+Service.localZone);
             return Convert.ToUInt32(DateTime.Now.Subtract(converDateTime).TotalSeconds);
         }

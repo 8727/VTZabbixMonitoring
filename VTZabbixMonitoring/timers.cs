@@ -69,7 +69,7 @@ namespace VTZabbixMonitoring
 
         public static void OnViolationStatus(Object source, ElapsedEventArgs e)
         {
-            UInt32 count = sql.UnprocessedViolationsCount(); ;
+            UInt32 count = sql.UnprocessedViolationsCount();
             UInt32 seconds = sql.UnprocessedViolationsSeconds();
 
             Service.StatuseJson["UnprocessedViolationsCount"] = count.ToString();
@@ -89,7 +89,7 @@ namespace VTZabbixMonitoring
 
         public static void OnExportStatus(Object source, ElapsedEventArgs e)
         {
-            UInt32 count = sql.UnexportedCount(); ;
+            UInt32 count = sql.UnexportedCount();
             UInt32 seconds = sql.UnexportedSeconds();
 
             Service.StatuseJson["UnexportedCount"] = count.ToString();
