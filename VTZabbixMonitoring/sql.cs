@@ -86,10 +86,10 @@ namespace VTZabbixMonitoring
             return archiveLast.Subtract(archiveOld).TotalSeconds.ToString();
         }
 
-        public static UInt32 ArchiveDepthCount()
+        public static string ArchiveDepthCount()
         {
             string sqlQuery = "SELECT COUNT_BIG(CARS_ID) FROM AVTO.dbo.CARS";
-            return Convert.ToUInt32(SQLQuery(sqlQuery));
+            return SQLQuery(sqlQuery).ToString();
         }
 
 

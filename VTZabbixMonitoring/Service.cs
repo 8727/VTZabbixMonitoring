@@ -44,7 +44,7 @@ namespace VTZabbixMonitoring
         public static bool statusHost = true;
         public static int statusHostIntervalMinutes = 5;
 
-        public static string networkInterfaceForMonitoring = "Intel[R] Wireless-AC 9260 160MHz";
+        public static string networkInterfaceForMonitoring = "Microsoft Hyper-V Network Adapter";
 
         public static string DiskMonitoring = "D:\\";
 
@@ -152,7 +152,7 @@ namespace VTZabbixMonitoring
 
         }
 
-        void CreatedStatuseJson()
+        void CreatedStatusJson()
         {
             StatusJson.Add("UpTime", timers.GetUpTime().ToString());
 
@@ -164,15 +164,14 @@ namespace VTZabbixMonitoring
             StatusJson.Add("NetworkSent", timers.GetNetworkSent().ToString());
             StatusJson.Add("NetworkReceived", timers.GetNetworkReceived().ToString());
 
-            StatusJson.Add("ArchiveDepthSeconds", sql.ArchiveDepthSeconds().ToString());
-            StatusJson.Add("ArchiveDepthCount", sql.ArchiveDepthCount().ToString());
+            StatusJson.Add("ArchiveDepthSeconds", sql.ArchiveDepthSeconds());
+            StatusJson.Add("ArchiveDepthCount", sql.ArchiveDepthCount());
 
             StatusJson.Add("LastReplicationSeconds", sql.LastReplicationSeconds().ToString());
             StatusJson.Add("UnprocessedViolationsCount", sql.UnprocessedViolationsCount().ToString());
             StatusJson.Add("UnprocessedViolationsSeconds", sql.UnprocessedViolationsSeconds().ToString());
             StatusJson.Add("UnexportedCount", sql.UnexportedCount().ToString());
             StatusJson.Add("UnexportedSeconds", sql.UnexportedSeconds().ToString());
-
         }
 
         protected override void OnStart(string[] args)
@@ -181,7 +180,7 @@ namespace VTZabbixMonitoring
             Logs.WriteLine("************************** Service Monitoring START ***************************");
             Logs.WriteLine("*******************************************************************************");
             LoadConfig();
-            CreatedStatuseJson();
+            CreatedStatusJson();
             Sorting.HashVuolation();
             web.WEBServer.Start();
         }

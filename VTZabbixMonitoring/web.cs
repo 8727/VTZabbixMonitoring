@@ -39,16 +39,23 @@ namespace VTZabbixMonitoring
 
             switch (key.ToLower())
             {
-                case "replicator":
-                    
-                    break;
                 case "violation":
 
                     break;
-                case "export":
-                    
-                    break;
                 default:
+                    json += ",\"upTime\":\"" + Service.StatusJson["UpTime"] + "\"";
+
+                    json += ",\"diskTotalSize\":\"" + Service.StatusJson["DiskTotalSize"] + "\"";
+                    json += ",\"diskTotalFreeSpace\":\"" + Service.StatusJson["DiskTotalFreeSpace"] + "\"";
+                    json += ",\"diskPercentTotalSize\":\"" + Service.StatusJson["DiskPercentTotalSize"] + "\"";
+                    json += ",\"diskPercentTotalFreeSpace\":\"" + Service.StatusJson["DiskPercentTotalFreeSpace"] + "\"";
+
+                    json += ",\"networkSent\":\"" + Service.StatusJson["NetworkSent"] + "\"";
+                    json += ",\"networkReceived\":\"" + Service.StatusJson["NetworkReceived"] + "\"";
+
+                    json += ",\"archiveDepthSeconds\":\"" + Service.StatusJson["ArchiveDepthSeconds"] + "\"";
+                    json += ",\"archiveDepthCount\":\"" + Service.StatusJson["ArchiveDepthCount"] + "\"";
+
                     json += ",\"replicationSeconds\":\"" + Service.StatusJson["LastReplicationSeconds"] + "\"";
                     json += ",\"violationsCount\":\"" + Service.StatusJson["UnprocessedViolationsCount"] + "\"";
                     json += ",\"violationsSeconds\":\"" + Service.StatusJson["UnprocessedViolationsSeconds"] + "\"";
